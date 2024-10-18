@@ -4,9 +4,12 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/dzakimaulana/SiJaki-Backend/internal/config"
 	"github.com/dzakimaulana/SiJaki-Backend/internal/models"
 	"github.com/golang-jwt/jwt/v5"
 )
+
+var cfgJWT = config.LoadJWTConfig()
 
 func GenerateJWT(user *models.User) (string, error) {
 	expirationTime := time.Now().Add(10 * time.Minute)
@@ -18,10 +21,7 @@ func GenerateJWT(user *models.User) (string, error) {
 	}
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-
-	secretKey := []byte("rahasia")
-
-	tokenString, err := token.SignedString(secretKey)
+	tokenString, err := token.SignedString([]byte(cfgJWT.Secret))
 	if err != nil {
 		return "", err
 	}
@@ -30,13 +30,11 @@ func GenerateJWT(user *models.User) (string, error) {
 }
 
 func VerifyJWT(tokenString string) (*jwt.MapClaims, error) {
-	secretKey := []byte("rahasia")
-
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
 		}
-		return secretKey, nil
+		return []byte(cfgJWT.Secret), nil
 	})
 
 	if err != nil {

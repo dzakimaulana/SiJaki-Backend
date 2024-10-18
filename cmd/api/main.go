@@ -13,9 +13,10 @@ import (
 )
 
 func main() {
-	cfg := config.LoadConfig()
+	cfgDB := config.LoadDBConfig()
+	cfgApp := config.LoadAppConfig()
 
-	dbConn, err := database.ConnectDB(cfg.DBUser, cfg.DBName, cfg.DBPassword)
+	dbConn, err := database.ConnectDB(cfgDB.DBUser, cfgDB.DBName, cfgDB.DBPassword)
 	if err != nil {
 		log.Fatalf("😞 Failed to connect to the database: %v", err)
 	}
@@ -36,5 +37,5 @@ func main() {
 	routes.UserRoute(userHandler, apiUser)
 	routes.WorkerRoute(workerHandler, apiWorker)
 
-	app.Listen(":8080")
+	app.Listen(cfgApp.Port)
 }

@@ -7,31 +7,57 @@ import (
 	"github.com/joho/godotenv"
 )
 
-type Config struct {
+type DBConfig struct {
 	DBHost     string
 	DBPort     string
 	DBUser     string
 	DBPassword string
 	DBName     string
-	ServerPort string
-	JWTSecret  string
-	LogLevel   string
 }
 
-func LoadConfig() *Config {
+func LoadDBConfig() *DBConfig {
 	err := godotenv.Load()
 	if err != nil {
 		log.Fatalf("💩 Error loading .env file")
 	}
 
-	return &Config{
+	return &DBConfig{
 		DBHost:     os.Getenv("DB_HOST"),
 		DBPort:     os.Getenv("DB_PORT"),
 		DBUser:     os.Getenv("DB_USER"),
 		DBPassword: os.Getenv("DB_PASSWORD"),
 		DBName:     os.Getenv("DB_NAME"),
-		ServerPort: os.Getenv("SERVER_PORT"),
-		JWTSecret:  os.Getenv("JWT_SECRET"),
-		LogLevel:   os.Getenv("LOG_LEVEL"),
+	}
+}
+
+type JWTConfig struct {
+	Secret string
+}
+
+func LoadJWTConfig() *JWTConfig {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("💩 Error loading .env file")
+	}
+
+	return &JWTConfig{
+		Secret: os.Getenv("JWT_SECRET"),
+	}
+}
+
+type AppConfig struct {
+	Port     string
+	LogLevel string
+}
+
+func LoadAppConfig() *AppConfig {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("💩 Error loading .env file")
+	}
+
+	return &AppConfig{
+		Port:     os.Getenv("APP_PORT"),
+		LogLevel: os.Getenv("LOG_LEVEL"),
 	}
 }
