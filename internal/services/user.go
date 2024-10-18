@@ -1,9 +1,6 @@
 package services
 
 import (
-	"time"
-
-	"github.com/dgrijalva/jwt-go"
 	"github.com/dzakimaulana/SiJaki-Backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -46,20 +43,4 @@ func (us *UserSvc) EditUser(user *models.User) error {
 	}
 
 	return nil
-}
-
-func (ws *UserSvc) GenerateJWT(user *models.User) (string, error) {
-	expirationTime := time.Now().Add(24 * time.Hour)
-	claims := &jwt.StandardClaims{
-		ExpiresAt: expirationTime.Unix(),
-		Issuer:    user.Username,
-	}
-
-	token := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
-	tokenString, err := token.SignedString([]byte("rahasia")) // change with .env
-	if err != nil {
-		return "", err
-	}
-
-	return tokenString, nil
 }

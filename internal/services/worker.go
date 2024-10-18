@@ -1,8 +1,6 @@
 package services
 
 import (
-	"fmt"
-
 	"github.com/dzakimaulana/SiJaki-Backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -37,7 +35,7 @@ func (ws *WorkerSvc) EditWorker(worker *models.Worker) error {
 	return nil
 }
 
-func (ws *WorkerSvc) DeleteWorkerByID(id uint) error {
+func (ws *WorkerSvc) DeleteWorker(id uint) error {
 	var worker models.Worker
 	if err := ws.DB.First(&worker, id).Error; err != nil {
 		return err
@@ -54,8 +52,18 @@ func (ws *WorkerSvc) GetWorkerByID(id uint) (*models.Worker, error) {
 	var worker models.Worker
 
 	if err := ws.DB.First(&worker, id).Error; err != nil {
-		return nil, fmt.Errorf("worker not found: %w", err)
+		return nil, err
 	}
 
 	return &worker, nil
+}
+
+func (ws *WorkerSvc) GetAllWorkers() ([]models.Worker, error) {
+	var workers []models.Worker
+
+	if err := ws.DB.Find(&workers).Error; err != nil {
+		return nil, err
+	}
+
+	return workers, nil
 }

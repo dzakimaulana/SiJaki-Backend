@@ -6,7 +6,10 @@ import (
 	"github.com/dzakimaulana/SiJaki-Backend/internal/config"
 	"github.com/dzakimaulana/SiJaki-Backend/internal/database"
 	"github.com/dzakimaulana/SiJaki-Backend/internal/handlers"
+	"github.com/dzakimaulana/SiJaki-Backend/internal/middlewares"
+	"github.com/dzakimaulana/SiJaki-Backend/internal/routes"
 	"github.com/dzakimaulana/SiJaki-Backend/internal/services"
+	"github.com/gofiber/fiber/v2"
 )
 
 func main() {
@@ -17,12 +20,21 @@ func main() {
 		log.Fatalf("😞 Failed to connect to the database: %v", err)
 	}
 	log.Println("✅ Successfully connected to the database!")
-	defer closeDB(dbConn)
 
-	userSvc := services.NewGeneralSvc(dbConn)
+	app := fiber.New()
+
+	api := app.Group("/api")
+	apiUser := api.Group("/users")
+	apiWorker := api.Group("/workers", middlewares.OnlyAdmin)
+
+	userSvc := services.NewUserSvc(dbConn)
 	workerSvc := services.NewWorkerSvc(dbConn)
 
-	userHandler := handlers.NewUserHandler()
-	workerHandler := handlers.NewWorkerHandler()
+	userHandler := handlers.NewUserHandler(userSvc)
+	workerHandler := handlers.NewWorkerHandler(workerSvc)
 
+	routes.UserRoute(userHandler, apiUser)
+	routes.WorkerRoute(workerHandler, apiWorker)
+
+	app.Listen(":8080")
 }
