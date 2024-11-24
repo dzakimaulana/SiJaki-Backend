@@ -123,9 +123,14 @@ func (wh *WorkerHandler) GetAllWorkers(c *fiber.Ctx) error {
 		})
 	}
 
+	message := "Get Worker Success"
+	if len(allWorkers) == 0 {
+		message = "No workers added"
+	}
+
 	return c.Status(fiber.StatusOK).JSON(fiber.Map{
 		"status":  "success",
-		"message": "Add Worker Success",
+		"message": message,
 		"data":    allWorkers,
 	})
 }

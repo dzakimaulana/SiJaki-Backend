@@ -1,6 +1,8 @@
 package services
 
 import (
+	"errors"
+
 	"github.com/dzakimaulana/SiJaki-Backend/internal/models"
 	"gorm.io/gorm"
 )
@@ -17,7 +19,11 @@ func NewUserSvc(db *gorm.DB) *UserSvc {
 
 func (us *UserSvc) GetUserByUsername(username string) (*models.User, error) {
 	var user models.User
-	if err := us.DB.First(&user, username).Error; err != nil {
+
+	if err := us.DB.Where("username = ?", username).First(&user).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, nil
+		}
 		return nil, err
 	}
 
@@ -34,7 +40,7 @@ func (us *UserSvc) AddUser(user *models.User) error {
 
 func (us *UserSvc) EditUser(user *models.User) error {
 	var existingUser models.User
-	if err := us.DB.First(&existingUser, user.ID).Error; err != nil {
+	if err := us.DB.Where("id = ?", user.ID).First(&existingUser).Error; err != nil {
 		return err
 	}
 

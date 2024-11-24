@@ -72,18 +72,27 @@ func (uh *UserHandler) Register(c *fiber.Ctx) error {
 
 	existingUser, err := uh.userSvc.GetUserByUsername(user.Username)
 	if err != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
 			"status": "error",
-			"error":  "Username Already Used",
+			"error":  "Error checking username",
 		})
 	}
 	if existingUser != nil {
-		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+		return c.Status(fiber.StatusConflict).JSON(fiber.Map{
 			"status": "error",
-			"error":  "Username Already Used",
+			"error":  "Username already used",
 		})
 	}
 
+	hashed, err := utils.HashingPassword(user.Password)
+	if err != nil {
+		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
+			"status": "error",
+			"error":  "Hash error",
+		})
+	}
+
+	user.Password = hashed
 	if err := uh.userSvc.AddUser(&user); err != nil {
 		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
 			"status": "error",

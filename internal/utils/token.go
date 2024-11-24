@@ -29,7 +29,7 @@ func GenerateJWT(user *models.User) (string, error) {
 	return tokenString, nil
 }
 
-func VerifyJWT(tokenString string) (*jwt.MapClaims, error) {
+func VerifyJWT(tokenString string) (jwt.MapClaims, error) {
 	token, err := jwt.ParseWithClaims(tokenString, &jwt.MapClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
@@ -42,7 +42,7 @@ func VerifyJWT(tokenString string) (*jwt.MapClaims, error) {
 	}
 
 	if claims, ok := token.Claims.(*jwt.MapClaims); ok && token.Valid {
-		return claims, nil
+		return *claims, nil
 	}
 
 	return nil, fmt.Errorf("invalid token or claims")

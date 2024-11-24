@@ -10,7 +10,7 @@ import (
 func OnlyAdmin(c *fiber.Ctx) error {
 	token := c.Get("Authorization")
 
-	if len(token) > 7 && strings.ToLower(token[:7]) == "Bearer " {
+	if len(token) > 7 && strings.ToLower(token[:7]) == "bearer " {
 		token = token[7:]
 	}
 
@@ -29,7 +29,7 @@ func OnlyAdmin(c *fiber.Ctx) error {
 		})
 	}
 
-	user, ok := (*claims)["user"].(string)
+	user, ok := claims["user"].(string)
 	if !ok || user != "admin" {
 		return c.Status(fiber.StatusUnauthorized).JSON(fiber.Map{
 			"status":  "error",

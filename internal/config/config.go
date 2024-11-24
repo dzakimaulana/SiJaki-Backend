@@ -61,3 +61,24 @@ func LoadAppConfig() *AppConfig {
 		LogLevel: os.Getenv("LOG_LEVEL"),
 	}
 }
+
+type MqttConfig struct {
+	Broker   string
+	Port     string
+	Username string
+	Password string
+}
+
+func LoadMqttConfig() *MqttConfig {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatalf("💩 Error loading .env file")
+	}
+
+	return &MqttConfig{
+		Broker:   os.Getenv("MQTT_BROKER"),
+		Port:     os.Getenv("MQTT_PORT"),
+		Username: os.Getenv("MQTT_USERNAME"),
+		Password: os.Getenv("MQTT_PASSWORD"),
+	}
+}
